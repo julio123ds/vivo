@@ -316,6 +316,27 @@
       line-height: 1.6;
       white-space: pre-line;
     }
+
+/* bloqueo para celulares */
+
+#mobileBlock{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#0d1117;
+color:white;
+z-index:99999;
+justify-content:center;
+align-items:center;
+text-align:center;
+font-size:22px;
+padding:40px;
+font-weight:600;
+}
+
   </style>
 </head>
 
@@ -388,9 +409,47 @@
 
       <button class="csv" id="copyEmails">Copiar correos</button>
     </div>
+    <!-- (5) Abrir Partners Backoffice -->
+<div class="panel">
+  <h2 class="csv">Abrir Catálogos de Partners</h2>
+
+  <div class="control">
+    <label for="partnersInput">Pega IDs o lista completa</label>
+    <textarea id="partnersInput" rows="6"></textarea>
+  </div>
+
+  <div class="control">
+    <label for="speedSelect">Velocidad de apertura</label>
+    <select id="speedSelect">
+      <option value="2500">🐢 Seguro (2.5s)</option>
+      <option value="1200" selected>🚀 Normal (1.2s)</option>
+      <option value="700">⚡ Rápido (0.7s)</option>
+    </select>
+  </div>
+
+  <button class="csv" id="openPartners">Abrir Catálogos</button>
+</div>
+
   </div>
 
   <script>
+
+/* detectar celular */
+
+function isMobileDevice() {
+
+return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent)
+
+}
+
+if(isMobileDevice()){
+
+document.getElementById("mobileBlock").style.display="flex"
+
+document.querySelector(".container").style.display="none"
+
+}
+
     /* =====================
        Dark toggle (igual)
        ===================== */
@@ -707,13 +766,65 @@
         .replace(/'/g, "&#039;");
     }
 
+	/* =====================
+   Abrir Partners Backoffice
+   ===================== */
+
+const partnersInput = document.getElementById("partnersInput");
+const openPartners = document.getElementById("openPartners");
+
+function extractPartnerIDs(text) {
+  if (!text) return [];
+
+  // Detecta números de 5 o más dígitos
+  const matches = text.match(/\d{5,}/g);
+
+  if (!matches) return [];
+
+  // eliminar duplicados
+  return [...new Set(matches)];
+}
+
+openPartners.addEventListener("click", () => {
+
+  const ids = extractPartnerIDs(partnersInput.value);
+
+  if (!ids.length) {
+    alert("No se detectaron IDs válidos.");
+    return;
+  }
+
+const speedSelect = document.getElementById("speedSelect");
+const delay = parseInt(speedSelect.value);
+
+  ids.forEach((id, index) => {
+
+    setTimeout(() => {
+
+      const url = `https://backoffice-app.pedidosya.com/#/partners/${id}/catalogue`;
+
+      window.open(url, "_blank");
+
+    }, index * delay);
+
+  });
+
+});	
+
+
     // init
     initCountries();
     updateEmails();
   </script>
 </body>
-</html>
 
+<div id="mobileBlock">
+⚠️ Esta página solo se debe abrir en computadoras o laptops.
+<br><br>
+Por favor accede desde una PC.
+</div>
+
+</html>
 
 
 
